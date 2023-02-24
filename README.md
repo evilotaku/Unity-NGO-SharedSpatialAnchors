@@ -4,7 +4,7 @@
 
 Unity-SharedSpatialAnchors was built to demonstrate how to use the Shared Spatial Anchors API, available in the Oculus Integration SDK for the Unity game engine. The sample app showcases the creation, saving, loading, and sharing of Spatial Anchors.
 
-For anchor sharing, this app uses Photon Unity Networking to share player data, and also allow users to interact with networked objects in a co-located space.
+For anchor sharing, this app originally used Photon Unity Networking to share player data I am going to port this over to use Unity Netcode for GameObjects, and also allow users to interact with networked objects in a co-located space.
 
 This codebase is available both as a reference and as a template for game that utilizes shared spatial anchors. Unity-SharedSpatialAnchors is under the license found [here](LICENSE) unless otherwise specified.
 
