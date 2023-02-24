@@ -1,6 +1,6 @@
 ![Group 1](https://user-images.githubusercontent.com/78103154/165530747-ab6ee610-c0a6-4f43-bed4-57db257984d9.png)
 
-# Unity-SharedSpatialAnchors
+# Unity-SharedSpatialAnchors /w Netcode for GameObjects
 
 Unity-SharedSpatialAnchors was built to demonstrate how to use the Shared Spatial Anchors API, available in the Oculus Integration SDK for the Unity game engine. The sample app showcases the creation, saving, loading, and sharing of Spatial Anchors.
 
