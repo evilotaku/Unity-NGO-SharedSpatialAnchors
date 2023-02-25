@@ -1,0 +1,4 @@
+repository "Unity-SharedSpatialAnchors@Memphis_Game_Developers_org@cloud"
+  path "/"
+    br "/main"
+    co "/main"
