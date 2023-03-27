@@ -9,18 +9,23 @@ using System.Text;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine;
 using Plane = Common.Plane;
-using ExitGames.Client.Photon;
-using Photon.Pun;
+//using ExitGames.Client.Photon;
+//using Photon.Pun;
 using System.Runtime.Serialization.Formatters.Binary;
+using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
+using Unity.Services.Lobbies;
 
 namespace Common
 {
     public class SceneApiSceneCaptureStrategy : SceneCaptureStrategy
     {
-        private static readonly Dictionary<string, ObstacleType> _obstacleTypeMap = new Dictionary<string, ObstacleType>()
-{
-{"DESK", ObstacleType.Desk}, {"COUCH", ObstacleType.Couch}, {"OTHER", ObstacleType.Misc}
-};
+        private static readonly Dictionary<string, ObstacleType> _obstacleTypeMap = new()
+        {
+            {"DESK", ObstacleType.Desk}, 
+            {"COUCH", ObstacleType.Couch}, 
+            {"OTHER", ObstacleType.Misc}
+        };
 
         private Action<Scene> _onComplete;
 
@@ -222,7 +227,7 @@ namespace Common
                 var space = entities[i].space;
                 DebugLogInitialPose(space);
                 // Enable Storable and Locatable components, as they are not enabled when the space is loaded from the storage for the first time.
-                // EnableComponentIfNecessary(space, OVRPlugin.SpaceComponentType.Storable);
+                EnableComponentIfNecessary(space, OVRPlugin.SpaceComponentType.Storable);
                 if (!EnableComponentIfNecessary(space, OVRPlugin.SpaceComponentType.Locatable))
                 {
                     AddEntityToRoom(space);
@@ -360,7 +365,7 @@ namespace Common
                 position = worldPose.position,
                 rotation = worldPose.orientation,
             };
-            //Debug.Log($"Plane Data for [{labels}]:" + plane.ToJson());
+            Debug.Log($"Plane Data for [{labels}]:" + JsonUtility.ToJson(plane));
             return plane;
         }
 
@@ -379,7 +384,7 @@ namespace Common
                 boundingBox = new Bounds(Vector3.zero, size)
             };
 
-            //Debug.Log($"Obstacle Data for [{labels}]:" + obstacle.ToJson());
+            Debug.Log($"Obstacle Data for [{labels}]:" + JsonUtility.ToJson(obstacle));
             return obstacle;
         }
 
@@ -398,7 +403,7 @@ namespace Common
                 boundingBox = new Bounds(Vector3.zero, size)
             };
 
-            //Debug.Log($"Obstacle Data for [{labels}]:" + obstacle.ToJson());
+            Debug.Log($"Obstacle Data for [{labels}]:" + JsonUtility.ToJson(obstacle));
             return obstacle;
         }
 
@@ -441,7 +446,7 @@ namespace Common
         /// </summary>
         private void EndRoomCaptureIfReady()
         {
-            //AnchorSession.Log($"EndRoomCaptureIfReady _idQueryCompleted [{_idQueryCompleted}] _componentEnablingInProgress [{_componentEnablingInProgress}]");
+            SampleController.Instance.Log($"EndRoomCaptureIfReady _idQueryCompleted [{_idQueryCompleted}] _componentEnablingInProgress [{_componentEnablingInProgress}]");
             if (!_idQueryCompleted || _componentEnablingInProgress > 0) return;
 
             _scene.walls = _walls.ToArray();
@@ -454,36 +459,44 @@ namespace Common
             //OMEGA TODO - Clean up the callbacks to not conflict with the shared anchor system
             //Cleanup();
 
-            ShareRoomOnPhoton(scene);
+            ShareRoomOnNGOLobby(scene);
 
             if (_onComplete != null)
                 _onComplete(scene);
         }
 
-        public void ShareRoomOnPhoton(Scene scene = null)
+        public async void ShareRoomOnNGOLobby(Scene scene = null)
         {
             if (scene == null)
                 scene = _scene;
 
-            if (PhotonNetwork.InRoom && PhotonNetwork.IsMasterClient)
+            if (NetworkManager.Singleton.IsHost)
             {
-                byte[] serializedData = Encoding.ASCII.GetBytes(JsonUtility.ToJson(scene));
+                //byte[] serializedData = Encoding.ASCII.GetBytes(
+                
+                var sceneJson = JsonUtility.ToJson(scene);
 
-                if (serializedData != null)
+                if (sceneJson != null)
                 {
-                    var roomProps = new ExitGames.Client.Photon.Hashtable
+                    var roomProps = new UpdateLobbyOptions
                     {
-                        [RoomDataKey] = serializedData
+                        Data = new()
+                        {{
+                                 RoomDataKey,
+                                 new DataObject(
+                                    visibility: DataObject.VisibilityOptions.Private,
+                                    value: sceneJson)
+                        }}
                     };
 
-                    PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);
+                    await LobbyService.Instance.UpdateLobbyAsync(NGOAnchorManager.Instance.lobby.Id, roomProps);
                 }
             }
         }
 
         public void AlignmentApplied()
         {
-            if (Photon.Pun.PhotonNetwork.IsMasterClient)
+            if (NetworkManager.Singleton.IsHost)
             {
                 BeginCaptureScene();
             }

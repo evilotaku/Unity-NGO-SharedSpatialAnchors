@@ -128,7 +128,7 @@ public class SharedAnchorLoader : MonoBehaviour
 
             if (SampleController.Instance.automaticCoLocation)
             {
-                PhotonAnchorManager.Instance.SessionStart();
+                NGOAnchorManager.Instance.SessionStart();
                 anchor.OnAlignButtonPressed();
             }
         }

@@ -21,9 +21,13 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using Photon.Pun;
+using Unity.Netcode;
+using Unity.Services.Authentication;
+using UnityEditor;
+using Oculus.Interaction;
+//using Photon.Pun;
 
-public class SharedAnchorControlPanel : MonoBehaviour
+public class SharedAnchorControlPanel : NetworkBehaviour
 {
     [SerializeField]
     private Transform referencePoint;
@@ -70,12 +74,15 @@ public class SharedAnchorControlPanel : MonoBehaviour
 
     private bool _isCreateMode;
 
-    private void Start()
+    public void Start()
     {
-        transform.parent = referencePoint;
-        transform.localPosition = Vector3.zero;
-        transform.localRotation = Quaternion.identity;
-        if(renderStyleText != null)
+        var joint = GetComponent<FixedJoint>();
+        transform.position = referencePoint.localPosition;
+        transform.rotation = referencePoint.localRotation;
+        joint.autoConfigureConnectedAnchor = false;
+        joint.connectedAnchor = referencePoint.localPosition;
+        joint.connectedBody = referencePoint.GetComponentInParent<Rigidbody>();
+        if (renderStyleText != null)
         {
             renderStyleText.text = "Render: " + CoLocatedPassthroughManager.Instance.visualization.ToString();
         }
@@ -83,7 +90,7 @@ public class SharedAnchorControlPanel : MonoBehaviour
 
     private void Update()
     {
-        statusText.text = "Status: " + PhotonNetwork.NetworkClientState;
+        statusText.text = "Status: ";// + PhotonNetwork.NetworkClientState;
     }
 
     public void OnCreateModeButtonPressed()
@@ -119,7 +126,7 @@ public class SharedAnchorControlPanel : MonoBehaviour
     {
         SampleController.Instance.Log("OnSpawnCubeButtonPressed");
 
-        SpawnCube();
+        SpawnCubeServerRpc(OwnerClientId);
     }
 
     public void LogNext()
@@ -144,11 +151,12 @@ public class SharedAnchorControlPanel : MonoBehaviour
         pageText.text = SampleController.Instance.logText.pageToDisplay + "/" + SampleController.Instance.logText.textInfo.pageCount;
     }
 
-    private void SpawnCube()
+    [ServerRpc(RequireOwnership = false)]
+    private void SpawnCubeServerRpc(ulong clientId)
     {
-        var networkedCube = PhotonNetwork.Instantiate(cubePrefab.name, spawnPoint.position, spawnPoint.rotation);
-        var photonGrabbable = networkedCube.GetComponent<PhotonGrabbableObject>();
-        photonGrabbable.TransferOwnershipToLocalPlayer();
+        var networkedCube = /*PhotonNetwork.*/Instantiate(cubePrefab, spawnPoint.position, spawnPoint.rotation);
+        var NGOGrabbable = networkedCube.GetComponent<NetworkObject>();
+        NGOGrabbable.SpawnWithOwnership(clientId);
     }
 
     public void ChangeUserPassthroughVisualization()

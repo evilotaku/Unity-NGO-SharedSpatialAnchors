@@ -27,15 +27,16 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.IO.Compression;
 using UnityEngine;
-using PhotonPun = Photon.Pun;
-using PhotonRealtime = Photon.Realtime;
+using Unity.Netcode;
+//using PhotonPun = Photon.Pun;
+//using PhotonRealtime = Photon.Realtime;
 
 /// <summary>
 /// Manages Photon Room creation and maintenence, and tracks anchor sharing information.
 /// </summary>
-public class PhotonAnchorManager : PhotonPun.MonoBehaviourPunCallbacks
+public class PhotonAnchorManager : NetworkBehaviour //PhotonPun.MonoBehaviourPunCallbacks
 {
-    [SerializeField]
+   /* [SerializeField]
     private SharedAnchorControlPanel controlPanel;
 
     [SerializeField]
@@ -545,4 +546,5 @@ public class PhotonAnchorManager : PhotonPun.MonoBehaviourPunCallbacks
         CoLocatedPassthroughManager.Instance.SessionStart();
     }
     #endregion
+   */
 }

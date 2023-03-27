@@ -19,18 +19,18 @@
  */
 
 using UnityEngine;
-using Photon.Pun;
+//using Photon.Pun;
 using Oculus.Interaction;
 
 public class PhotonGrabbableObject : MonoBehaviour
 {
     protected Grabbable _grabbable;
-    private PhotonView _photonView;
+    //private PhotonView _photonView;
 
     private void Awake()
     {
         _grabbable = GetComponent<Grabbable>();
-        _photonView = GetComponent<PhotonView>();
+        //_photonView = GetComponent<PhotonView>();
     }
 
     private void OnEnable()
@@ -66,11 +66,11 @@ public class PhotonGrabbableObject : MonoBehaviour
 
     public void TransferOwnershipToLocalPlayer()
     {
-        if (_photonView.Owner != PhotonNetwork.LocalPlayer)
+        /*if (_photonView.Owner != PhotonNetwork.LocalPlayer)
         {
             SampleController.Instance.Log("TransferOwnershipToLocalPlayer: changing photon ownership of " + gameObject.name + " to local player.");
             
             _photonView.TransferOwnership(PhotonNetwork.LocalPlayer);
-        }
+        }*/
     }
 }

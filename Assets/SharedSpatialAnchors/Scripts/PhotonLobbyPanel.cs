@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using PhotonPun = Photon.Pun;
-using PhotonRealtime = Photon.Realtime;
+//using PhotonPun = Photon.Pun;
+//using PhotonRealtime = Photon.Realtime;
 using Oculus.Interaction;
 
 public class PhotonLobbyPanel : MonoBehaviour
 {
-    [SerializeField]
+   /* [SerializeField]
     private GameObject              menuPanel;
 
     [SerializeField]
@@ -141,7 +141,7 @@ public class PhotonLobbyPanel : MonoBehaviour
         }
         else
         {
-            /*
+            *//*
             //TODO - Remove this test data after using it to implement scrolling / paging
             for (int i = 0; i < 10; i++)
             {
@@ -150,7 +150,7 @@ public class PhotonLobbyPanel : MonoBehaviour
                 newLobbyRow.GetComponent<PhotonLobbyRow>().SetRowText("Room#" + i);
                 lobbyRowList.Add(newLobbyRow);
             }
-            */
+            *//*
         }
     }
 
@@ -196,5 +196,5 @@ public class PhotonLobbyPanel : MonoBehaviour
             if (buttonText)
                 buttonText.color = Color.white;
         }
-    }
+    }*/
 }

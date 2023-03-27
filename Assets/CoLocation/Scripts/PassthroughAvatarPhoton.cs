@@ -1,21 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun;
+using Unity.Netcode;
+//using Photon.Pun;
 
-public class PassthroughAvatarPhoton : MonoBehaviour, IPunObservable
+public class PassthroughAvatarPhoton : NetworkBehaviour//, IPunObservable
 {
     public GameObject headPrefab, leftPrefab, rightPrefab;
     private Transform head, right, left, body;
-    private PhotonView photonView;
+   // private PhotonView photonView;
     private AvatarPassthrough passthrough;
 
     private void Start()
     {
-        photonView = GetComponent<PhotonView>();
-        if (!photonView.IsMine)
+       // photonView = GetComponent<PhotonView>();
+        //if (!photonView.IsMine)
         {
-            body = new GameObject("Player" + photonView.CreatorActorNr).transform;
+            body = new GameObject("Player"/* + photonView.CreatorActorNr*/).transform;
             head = headPrefab == null ?
                 new GameObject("head").transform :
                 Instantiate(headPrefab, Vector3.zero, Quaternion.identity).transform;
@@ -30,10 +31,10 @@ public class PassthroughAvatarPhoton : MonoBehaviour, IPunObservable
             left.SetParent(body);
         }
         passthrough = CoLocatedPassthroughManager.Instance.AddCoLocalUser(head, right, left);
-        passthrough.IsMine = photonView.IsMine;
+        passthrough.IsMine = IsOwner;
     }
 
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    /*public void OnPhotonSerializeView(*//*PhotonStream stream, PhotonMessageInfo info*//*)
     {
         if (stream.IsWriting)
         {
@@ -55,7 +56,7 @@ public class PassthroughAvatarPhoton : MonoBehaviour, IPunObservable
             right.eulerAngles = (Vector3)stream.ReceiveNext();
             passthrough.location = (string)stream.ReceiveNext();
         }
-    }
+    }*/
 
     private void OnDisable()
     {

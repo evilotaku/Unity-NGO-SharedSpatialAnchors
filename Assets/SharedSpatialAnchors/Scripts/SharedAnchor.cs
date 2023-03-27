@@ -23,6 +23,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -163,13 +164,13 @@ public class SharedAnchor : MonoBehaviour
 
     private bool IsReadyToShare()
     {        
-        if (!Photon.Pun.PhotonNetwork.IsConnected)
+        if (!NetworkManager.Singleton.IsConnectedClient)
         {
-            SampleController.Instance.Log("Can't share - no users to share with because you are no longer connected to the Photon network");
+            SampleController.Instance.Log("Can't share - no users to share with because you are no longer connected to the network");
             return false;
         }
 
-        var userIds = PhotonAnchorManager.GetUserList().Select(userId => userId.ToString()).ToArray();
+        var userIds = NGOAnchorManager.GetUserList().Select(userId => userId.ToString()).ToArray();
         if (userIds.Length == 0)
         {
             SampleController.Instance.Log("Can't share - no users to share with or can't get the user ids through photon custom properties");
@@ -203,7 +204,7 @@ public class SharedAnchor : MonoBehaviour
             {
                 SampleController.Instance.Log("Successfully saved anchor(s) to the cloud");
 
-                var userIds = PhotonAnchorManager.GetUserList().Select(userId => userId.ToString()).ToArray();
+                var userIds = NGOAnchorManager.GetUserList().Select(userId => userId.ToString()).ToArray();
                 ICollection<OVRSpaceUser> spaceUserList = new List<OVRSpaceUser>();
                 foreach (string strUsername in userIds)
                 {
@@ -235,9 +236,9 @@ public class SharedAnchor : MonoBehaviour
         OVRSpatialAnchor.SaveOptions saveOptions;
         saveOptions.Storage = OVRSpace.StorageLocation.Cloud;
         ICollection<OVRSpaceUser> spaceUserList = new List<OVRSpaceUser>();
-        foreach (string strUsername in PhotonAnchorManager.GetUsers())
+        foreach (string strUsername in NGOAnchorManager.GetUsers())
         {
-            spaceUserList.Add(new OVRSpaceUser(ulong.Parse(strUsername)));
+            //spaceUserList.Add(new OVRSpaceUser(ulong.Parse(strUsername)));
         }
         OVRSpatialAnchor.Share(new List<OVRSpatialAnchor> { _spatialAnchor }, spaceUserList, OnShareComplete);
     }
@@ -266,7 +267,7 @@ public class SharedAnchor : MonoBehaviour
             ++uuidIndex;
         }
 
-        PhotonAnchorManager.Instance.PublishAnchorUuids(uuids, (uint)uuids.Length, true);
+        NGOAnchorManager.Instance.PublishAnchorUuids(uuids, (uint)uuids.Length, true);
     }
 
     public void OnAlignButtonPressed()

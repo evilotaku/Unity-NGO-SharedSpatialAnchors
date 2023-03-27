@@ -91,7 +91,7 @@ public class CachedSharedAnchor : MonoBehaviour
     }
 
     private bool IsReadyToShare() {
-        var userIds = PhotonAnchorManager.GetUserList().Select(userId => userId.ToString()).ToArray();
+        string[] userIds = NGOAnchorManager.GetUserList().Select(userId => userId.ToString()).ToArray();
         if (userIds.Length == 0)
         {
             SampleController.Instance.Log("Can't share - no users to share with or can't get the user ids through photon custom properties");
@@ -124,9 +124,9 @@ public class CachedSharedAnchor : MonoBehaviour
                 SampleController.Instance.Log("Successfully saved anchor(s) to the cloud");
                 SampleController.Instance.colocationCachedAnchor = this;
 
-                var userIds = PhotonAnchorManager.GetUserList().Select(userId => userId.ToString()).ToArray();
+                var userIds = NGOAnchorManager.GetUserList().Select(userId => userId.ToString()).ToArray();
                 ICollection<OVRSpaceUser> spaceUserList = new List<OVRSpaceUser>();
-                foreach (string strUsername in PhotonAnchorManager.GetUsers())
+                foreach (string strUsername in NGOAnchorManager.GetUsers())
                 {
                     spaceUserList.Add(new OVRSpaceUser(ulong.Parse(strUsername)));
                 }
@@ -151,7 +151,7 @@ public class CachedSharedAnchor : MonoBehaviour
         OVRSpatialAnchor.SaveOptions saveOptions;
         saveOptions.Storage = OVRSpace.StorageLocation.Cloud;
         ICollection<OVRSpaceUser> spaceUserList = new List<OVRSpaceUser>();
-        foreach (string strUsername in PhotonAnchorManager.GetUsers())
+        foreach (string strUsername in NGOAnchorManager.GetUsers())
         {
             spaceUserList.Add(new OVRSpaceUser(ulong.Parse(strUsername)));
         }
@@ -183,14 +183,14 @@ public class CachedSharedAnchor : MonoBehaviour
             ++uuidIndex;
         }
 
-        PhotonAnchorManager.Instance.PublishAnchorUuids(uuids, (uint)uuids.Length, true);
+        NGOAnchorManager.Instance.PublishAnchorUuids(uuids, (uint)uuids.Length, true);
     }
 
     public void SendLocalAnchor() {
         SampleController.Instance.Log("SendLocalAnchor: uuid: " + _spatialAnchor);
         var uuids = new Guid[1];
         uuids[0] = _spatialAnchor.Uuid;
-        PhotonAnchorManager.Instance.PublishAnchorUuids(uuids, (uint)uuids.Length, false);
+        NGOAnchorManager.Instance.PublishAnchorUuids(uuids, (uint)uuids.Length, false);
     }
 
     public void AlignToAnchor()
